@@ -1,12 +1,10 @@
 using UnityEngine;
 using GoogleMobileAds.Api;
 using System;
-using UnityEngine.SceneManagement;
 
 public class AdmobUnitInterstitial : AdmobUnitBase
 {
     private InterstitialAd interstitialAd;
-    private string nextSceneName;
 
     public bool IsReady
     {
@@ -25,9 +23,8 @@ public class AdmobUnitInterstitial : AdmobUnitBase
         LoadInterstitialAd();
     }
 
-    public void ShowInterstitial(string sceneToLoad)
+    public void ShowInterstitial()
     {
-        nextSceneName = sceneToLoad;
         if (IsReady)
         {
             interstitialAd.Show();
@@ -35,13 +32,12 @@ public class AdmobUnitInterstitial : AdmobUnitBase
         else
         {
             Debug.Log("Interstitial ad is not ready yet.");
-            SceneManager.LoadScene(nextSceneName);  // Load scene immediately if ad is not ready
         }
     }
 
     private void LoadInterstitialAd()
     {
-        // Clean up old ads before loading new ones
+        // Clean up the old ad before loading a new one.
         if (interstitialAd != null)
         {
             interstitialAd.Destroy();
@@ -55,7 +51,7 @@ public class AdmobUnitInterstitial : AdmobUnitBase
             {
                 if (error != null || ad == null)
                 {
-                    Debug.LogError("Interstitial ad failed to load an ad " +
+                    Debug.LogError("interstitial ad failed to load an ad " +
                                    "with error : " + error);
                     return;
                 }
@@ -70,12 +66,40 @@ public class AdmobUnitInterstitial : AdmobUnitBase
 
     private void RegisterEventHandlers(InterstitialAd interstitialAd)
     {
-        // Called when the ad closes the full screen content
+        // Raised when the ad is estimated to have earned money.
+        interstitialAd.OnAdPaid += (AdValue adValue) =>
+        {
+            Debug.Log(String.Format("Interstitial ad paid {0} {1}.",
+                adValue.Value,
+                adValue.CurrencyCode));
+        };
+        // Raised when an impression is recorded for an ad.
+        interstitialAd.OnAdImpressionRecorded += () =>
+        {
+            Debug.Log("Interstitial ad recorded an impression.");
+        };
+        // Raised when a click is recorded for an ad.
+        interstitialAd.OnAdClicked += () =>
+        {
+            Debug.Log("Interstitial ad was clicked.");
+        };
+        // Raised when an ad opened full screen content.
+        interstitialAd.OnAdFullScreenContentOpened += () =>
+        {
+            Debug.Log("Interstitial ad full screen content opened.");
+        };
+        // Raised when the ad closed full screen content.
         interstitialAd.OnAdFullScreenContentClosed += () =>
         {
             Debug.Log("Interstitial ad full screen content closed.");
             LoadInterstitialAd();
-            SceneManager.LoadScene(nextSceneName);  // Load scene after ads are closed.
+        };
+        // Raised when the ad failed to open full screen content.
+        interstitialAd.OnAdFullScreenContentFailed += (AdError error) =>
+        {
+            Debug.LogError("Interstitial ad failed to open full screen content " +
+                           "with error : " + error);
+            LoadInterstitialAd();
         };
     }
 }

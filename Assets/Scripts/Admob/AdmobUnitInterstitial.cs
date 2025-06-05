@@ -1,6 +1,7 @@
 using UnityEngine;
 using GoogleMobileAds.Api;
 using System;
+using UnityEngine.SceneManagement;
 
 public class AdmobUnitInterstitial : AdmobUnitBase
 {
@@ -93,6 +94,7 @@ public class AdmobUnitInterstitial : AdmobUnitBase
         {
             Debug.Log("Interstitial ad full screen content closed.");
             LoadInterstitialAd();
+            SceneManager.LoadScene(Common.GetMoveSceneName());
         };
         // Raised when the ad failed to open full screen content.
         interstitialAd.OnAdFullScreenContentFailed += (AdError error) =>

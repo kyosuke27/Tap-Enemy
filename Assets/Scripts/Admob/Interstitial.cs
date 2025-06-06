@@ -1,27 +1,22 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
-public class Interstitial : MonoBehaviour
+public class TestInterstitial : MonoBehaviour
 {
     public Button showInterstitialButton;
+
     public AdmobUnitInterstitial admobUnitInterstitial;
 
     private void Start()
     {
-        showInterstitialButton.interactable = true;
+        showInterstitialButton.interactable = false;
 
         showInterstitialButton.onClick.AddListener(() =>
         {
-            string buttonTag = showInterstitialButton.tag;
-            if (buttonTag == "retry")
-            {
-                admobUnitInterstitial.ShowInterstitial("Scenes/GameScene");
-            }
-            else
-            {
-                Debug.LogWarning("Button tag is not recognized.");
-            }
-            showInterstitialButton.interactable = true;
+            admobUnitInterstitial.ShowInterstitial();
+            showInterstitialButton.interactable = false;
+            SceneManager.LoadScene("Scenes/GameScene");
         });
     }
 
